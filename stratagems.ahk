@@ -68,7 +68,7 @@ Hellbomb() {
     BlockInput "Off"
 }
 
-SSSDDelivery {
+SSSDDelivery() {
     BlockInput "On"
     Send "{LControl down}sssww{LControl up}"
     BlockInput "Off"
