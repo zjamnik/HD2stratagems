@@ -50,15 +50,21 @@ Reinforce() {
     BlockInput "Off"
 }
 
-SOS() {
+SOSBeacon() {
     BlockInput "On"
-    Send "{LControl down}{LControl up}"
+    Send "{LControl down}wsdw{LControl up}"
     BlockInput "Off"
 }
 
 Resupply() {
     BlockInput "On"
     Send "{LControl down}sswd{LControl up}"
+    BlockInput "Off"
+}
+
+EagleRearm() {
+    BlockInput "On"
+    Send "{LControl down}wwawd{LControl up}"
     BlockInput "Off"
 }
 
@@ -99,9 +105,9 @@ Stalwart() {
     BlockInput "Off"
 }
 
-ExpedableAntiTank() {
+ExpendableAntiTank() {
     BlockInput "On"
-    Send "{LControl down}{LControl up}"
+    Send "{LControl down}ssawd{LControl up}"
     BlockInput "Off"
 }
 
@@ -191,6 +197,12 @@ ShieldGeneratorPack() {
 }
 
 ; Orbital Cannons
+OrbitalGatlingBarrage() {
+    BlockInput "On"
+    Send "{LControl down}dsaww{LControl up}"
+    BlockInput "Off"
+}
+
 OrbitalAirburstStrike() {
     BlockInput "On"
     Send "{LControl down}ddd{LControl up}"
