@@ -148,6 +148,7 @@ loop parse, IniRead(configPath, "HOTKEYS"), "`n" {
     MyGui.BackColor := "292929"
     MyGui.OnEvent("Close", MyGui_Close)
     OnExit(MyGui_Close)
+    \:: MyGui.Restore()
 
     MyGui_Close(*) {
         SetNumLockState(orgNumlockState = 0 ? "Off" : "On")
