@@ -61,6 +61,7 @@ SetKeyDelay 100, 50
     stratagems["AutocannonSentry"] := ""
     stratagems["RocketSentry"] := "swdda"
     stratagems["EMSMortarSentry"] := ""
+    stratagems["SEAFArtillery"] := "dwws"
 }
 
 sendStratagem(keyname) {
