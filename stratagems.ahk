@@ -111,7 +111,7 @@ sendStratagem(keyname) {
 
         initValue("WINDOW", "X", 0)
         initValue("WINDOW", "Y", 0)
-        initValue("WINDOW", "AlwaysOnTop", False)
+        initValue("WINDOW", "AlwaysOnTop", "+")
     }
 
     ; Update stratagems sequences
