@@ -17,15 +17,17 @@ SetKeyDelay 100, 50
 ;           ^---------^ stratagem function name, same as below
 HotIfWinActive "Helldivers™ 2"
 Numpad7:: Reinforce()
+Numpad8:: EagleRearm()
 Numpad9:: Resupply()
 
 Numpad0:: EagleClusterBomb()
+Numpad1:: OrbitalPrecisionStrike()
+Numpad2:: MortarSentry()
 Numpad3:: GatlingSentry()
-Numpad2:: MachineGunSentry()
-Numpad1:: AntiPersonnelMinefield()
 
 Numpad4:: MachineGun()
 Numpad5:: RailGun()
+Numpad6:: AntiMaterielRifle()
 
 NumpadAdd:: Hellbomb()
 
@@ -162,7 +164,7 @@ ArcThrower() {
 ; Support Equipement
 JumpPack() {
     BlockInput "On"
-    Send "{LControl down}{LControl up}"
+    Send "{LControl down}swwsw{LControl up}"
     BlockInput "Off"
 }
 
@@ -174,7 +176,7 @@ SupplyPack() {
 
 GuardDog() {
     BlockInput "On"
-    Send "{LControl down}{LControl up}"
+    Send "{LControl down}swawds{LControl up}"
     BlockInput "Off"
 }
 
