@@ -2,72 +2,10 @@
 SendMode "Event"
 SetKeyDelay 100, 50
 
-; Stratagem sequence definition
-{
-    stratagems := Map()
-    stratagems.Default := ""
-    stratagems["Reinforce"] := "wsdaw"
-    stratagems["SOSBeacon"] := "wsdw"
-    stratagems["Resupply"] := "sswd"
-    stratagems["EagleRearm"] := "wwawd"
-    stratagems["Hellbomb"] := "swaswdsw"
-    stratagems["SSSDDelivery"] := "sssww"
-    stratagems["UploadData"] := "adwww"
-    stratagems["OrbitalIlluminationFlare"] := "ddaa"
-    stratagems["MachineGun"] := "saswd"
-    stratagems["AntiMaterielRifle"] := "sadws"
-    stratagems["Stalwart"] := ""
-    stratagems["ExpendableAntiTank"] := "ssawd"
-    stratagems["RecoillessRifle"] := "sadda"
-    stratagems["Flamethrower"] := ""
-    stratagems["Autocannon"] := "saswwd"
-    stratagems["RailGun"] := "sdswad"
-    stratagems["Spear"] := ""
-    stratagems["GrenadeLauncher"] := ""
-    stratagems["LaserCannon"] := ""
-    stratagems["ArcThrower"] := ""
-    stratagems["JumpPack"] := "swwsw"
-    stratagems["SupplyPack"] := ""
-    stratagems["GuardDog"] := "swawds"
-    stratagems["GuardDogRover"] := ""
-    stratagems["BallisticShieldBackpack"] := ""
-    stratagems["ShieldGeneratorPack"] := "swadad"
-    stratagems["OrbitalGatlingBarrage"] := "dsaww"
-    stratagems["OrbitalAirburstStrike"] := "ddd"
-    stratagems["Orbital120MMHEBarrage"] := "ddsads"
-    stratagems["Orbital380MMHEBarrage"] := "dswwass"
-    stratagems["OrbitalWalkingBarrage"] := ""
-    stratagems["OrbitalLaser"] := "dswds"
-    stratagems["OrbitalRailcannonStrike"] := ""
-    stratagems["OrbitalPrecisionStrike"] := "ddw"
-    stratagems["OrbitalGasStrike"] := ""
-    stratagems["OrbitalEMSStrike"] := ""
-    stratagems["OrbitalSmokeStrike"] := ""
-    stratagems["EagleStrafingRun"] := "wdd"
-    stratagems["EagleAirstrike"] := "wdsd"
-    stratagems["EagleClusterBomb"] := "wdssd"
-    stratagems["EagleNapalmAirstrike"] := ""
-    stratagems["EagleSmokeStrike"] := ""
-    stratagems["Eagle110MMRocketPods"] := "wdwa"
-    stratagems["Eagle500KgBomb"] := "wdsss"
-    stratagems["AntiPersonnelMinefield"] := "sawd"
-    stratagems["IncendiaryMines"] := ""
-    stratagems["HMGEmplacement"] := "swadda"
-    stratagems["ShieldGeneratorRelay"] := ""
-    stratagems["TeslaTower"] := ""
-    stratagems["MachineGunSentry"] := "swddw"
-    stratagems["GatlingSentry"] := "swda"
-    stratagems["MortarSentry"] := "swdds"
-    stratagems["AutocannonSentry"] := ""
-    stratagems["RocketSentry"] := "swdda"
-    stratagems["EMSMortarSentry"] := ""
-    stratagems["SEAFArtillery"] := "dwws"
-}
-
 sendStratagem(keyname) {
     BlockInput "On"
-    Send "{LControl down}" . stratagems[getValue("HOTKEYS", keyname)] . "{LControl up}"
-    ; Send stratagems[getValue("HOTKEYS", keyname)]
+    ; Send "{LControl down}" . getStratagem(getValue("HOTKEYS", keyname)) . "{LControl up}"
+    Send getStratagem(getValue("HOTKEYS", keyname))
     BlockInput "Off"
 }
 
@@ -104,20 +42,9 @@ sendStratagem(keyname) {
 
         FileAppend("`n", configPath)
 
-        for key, value in stratagems {
-            setValue("STRATAGEMS", key, value)
-        }
-
-        FileAppend("`n", configPath)
-
         initValue("WINDOW", "X", 0)
         initValue("WINDOW", "Y", 0)
         initValue("WINDOW", "AlwaysOnTop", "+")
-    }
-
-    ; Update stratagems sequences
-    for key, value in stratagems {
-        setValue("STRATAGEMS", key, value)
     }
 
     ; Config functions
@@ -133,13 +60,17 @@ sendStratagem(keyname) {
     initValue(section, key, default := "Blank") {
         return setValue(section, key, getValue(section, key, default))
     }
+
+    getStratagem(name) {
+        return IniRead(A_ScriptDir . "\stratagems.const", "STRATAGEMS", name, "")
+    }
 }
 
 ; Load hotkeys
 loop parse, IniRead(configPath, "HOTKEYS"), "`n" {
     hotkeyPair := StrSplit(A_LoopField, "=")
 
-    HotIfWinactive("HELLDIVERS™ 2")
+    ; HotIfWinactive("HELLDIVERS™ 2")
     Hotkey(hotkeyPair[1], sendStratagem)
 }
 
