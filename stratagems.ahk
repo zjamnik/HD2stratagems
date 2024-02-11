@@ -13,22 +13,39 @@ SetKeyDelay 100, 50
 ;
 ; v-----v key combination, can be single key or combination of keys, examples: ^x, +a, !q
 ; Numpad7:: Reinforce()
-;        ^^ - needs to be there
+;        ^^ needs to be there
 ;           ^---------^ stratagem function name, same as below
-HotIfWinActive "Helldivers™ 2"
+#HotIf WinActive("Helldivers™ 2")
+NumpadDiv:: return
+NumpadMult:: return
+NumpadSub:: return
+
+NumpadHome::
 Numpad7:: Reinforce()
+NumpadUp::
 Numpad8:: EagleRearm()
+NumpadPgUp::
 Numpad9:: Resupply()
 
+NumpadIns::
 Numpad0:: EagleClusterBomb()
+NumpadEnd::
 Numpad1:: OrbitalPrecisionStrike()
+NumpadDown::
 Numpad2:: MortarSentry()
+NumpadPgDn::
 Numpad3:: GatlingSentry()
 
+NumpadLeft::
 Numpad4:: MachineGun()
+NumpadClear::
 Numpad5:: RailGun()
+NumpadRight::
 Numpad6:: AntiMaterielRifle()
 
+NumpadDot:: return
+NumpadDel:: return
+NumpadEnter:: return
 NumpadAdd:: Hellbomb()
 
 ; Stratagem definition, copy the template, change name to stratagem name and fill in the sequence same as in game.
@@ -79,6 +96,12 @@ Hellbomb() {
 SSSDDelivery() {
     BlockInput "On"
     Send "{LControl down}sssww{LControl up}"
+    BlockInput "Off"
+}
+
+UploadData() {
+    BlockInput "On"
+    Send "{LControl down}adwww{LControl up}"
     BlockInput "Off"
 }
 
