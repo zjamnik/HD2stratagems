@@ -65,8 +65,8 @@ SetKeyDelay 100, 50
 
 sendStratagem(keyname) {
     BlockInput "On"
-    ; Send "{LControl down}" . stratagems[getValue("HOTKEYS", keyname)] . "{LControl up}"
-    Send stratagems[getValue("HOTKEYS", keyname)]
+    Send "{LControl down}" . stratagems[getValue("HOTKEYS", keyname)] . "{LControl up}"
+    ; Send stratagems[getValue("HOTKEYS", keyname)]
     BlockInput "Off"
 }
 
@@ -138,7 +138,7 @@ sendStratagem(keyname) {
 loop parse, IniRead(configPath, "HOTKEYS"), "`n" {
     hotkeyPair := StrSplit(A_LoopField, "=")
 
-    HotIfWinactive("Helldivers™ 2")
+    HotIfWinactive("HELLDIVERS™ 2")
     Hotkey(hotkeyPair[1], sendStratagem)
 }
 
