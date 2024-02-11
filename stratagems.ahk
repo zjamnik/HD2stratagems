@@ -2,399 +2,202 @@
 SendMode "Event"
 SetKeyDelay 100, 50
 
-; Macro keys definition
-; https://www.autohotkey.com/docs/v2/Hotkeys.htm - how hotkeys work
-; https://www.autohotkey.com/docs/v2/KeyList.htm - key names to use
-; Modificators:
-; ^ - Ctrl - combinations with Ctrl might need some modifications, better not use
-; + - Shift
-; ! - Alt
-; # - Win
-;
-; v-----v key combination, can be single key or combination of keys, examples: ^x, +a, !q
-; Numpad7:: Reinforce()
-;        ^^ needs to be there
-;           ^---------^ stratagem function name, same as below
-#HotIf WinActive("Helldivers™ 2")
-NumpadDiv:: return
-NumpadMult:: return
-NumpadSub:: return
+; Stratagem sequence definition
+{
+    stratagems := Map()
+    stratagems.Default := ""
+    stratagems["Reinforce"] := "wsdaw"
+    stratagems["SOSBeacon"] := "wsdw"
+    stratagems["Resupply"] := "sswd"
+    stratagems["EagleRearm"] := "wwawd"
+    stratagems["Hellbomb"] := "swaswdsw"
+    stratagems["SSSDDelivery"] := "sssww"
+    stratagems["UploadData"] := "adwww"
+    stratagems["OrbitalIlluminationFlare"] := "ddaa"
+    stratagems["MachineGun"] := "saswd"
+    stratagems["AntiMaterielRifle"] := "sadws"
+    stratagems["Stalwart"] := ""
+    stratagems["ExpendableAntiTank"] := "ssawd"
+    stratagems["RecoillessRifle"] := "sadda"
+    stratagems["Flamethrower"] := ""
+    stratagems["Autocannon"] := "saswwd"
+    stratagems["RailGun"] := "sdswad"
+    stratagems["Spear"] := ""
+    stratagems["GrenadeLauncher"] := ""
+    stratagems["LaserCannon"] := ""
+    stratagems["ArcThrower"] := ""
+    stratagems["JumpPack"] := "swwsw"
+    stratagems["SupplyPack"] := ""
+    stratagems["GuardDog"] := "swawds"
+    stratagems["GuardDogRover"] := ""
+    stratagems["BallisticShieldBackpack"] := ""
+    stratagems["ShieldGeneratorPack"] := "swadad"
+    stratagems["OrbitalGatlingBarrage"] := "dsaww"
+    stratagems["OrbitalAirburstStrike"] := "ddd"
+    stratagems["Orbital120MMHEBarrage"] := "ddsads"
+    stratagems["Orbital380MMHEBarrage"] := "dswwass"
+    stratagems["OrbitalWalkingBarrage"] := ""
+    stratagems["OrbitalLaser"] := "dswds"
+    stratagems["OrbitalRailcannonStrike"] := ""
+    stratagems["OrbitalPrecisionStrike"] := "ddw"
+    stratagems["OrbitalGasStrike"] := ""
+    stratagems["OrbitalEMSStrike"] := ""
+    stratagems["OrbitalSmokeStrike"] := ""
+    stratagems["EagleStrafingRun"] := "wdd"
+    stratagems["EagleAirstrike"] := "wdsd"
+    stratagems["EagleClusterBomb"] := "wdssd"
+    stratagems["EagleNapalmAirstrike"] := ""
+    stratagems["EagleSmokeStrike"] := ""
+    stratagems["Eagle110MMRocketPods"] := "wdwa"
+    stratagems["Eagle500KgBomb"] := "wdsss"
+    stratagems["AntiPersonnelMinefield"] := "sawd"
+    stratagems["IncendiaryMines"] := ""
+    stratagems["HMGEmplacement"] := "swadda"
+    stratagems["ShieldGeneratorRelay"] := ""
+    stratagems["TeslaTower"] := ""
+    stratagems["MachineGunSentry"] := "swddw"
+    stratagems["GatlingSentry"] := "swda"
+    stratagems["MortarSentry"] := "swdds"
+    stratagems["AutocannonSentry"] := ""
+    stratagems["RocketSentry"] := "swdda"
+    stratagems["EMSMortarSentry"] := ""
+}
 
-NumpadHome::
-Numpad7:: Reinforce()
-NumpadUp::
-Numpad8:: EagleRearm()
-NumpadPgUp::
-Numpad9:: Resupply()
-
-NumpadIns::
-Numpad0:: EagleClusterBomb()
-NumpadEnd::
-Numpad1:: OrbitalPrecisionStrike()
-NumpadDown::
-Numpad2:: MortarSentry()
-NumpadPgDn::
-Numpad3:: GatlingSentry()
-
-NumpadLeft::
-Numpad4:: MachineGun()
-NumpadClear::
-Numpad5:: RailGun()
-NumpadRight::
-Numpad6:: AntiMaterielRifle()
-
-NumpadDot:: return
-NumpadDel:: return
-NumpadEnter:: return
-NumpadAdd:: Hellbomb()
-
-; Stratagem definition, copy the template, change name to stratagem name and fill in the sequence same as in game.
-; v-------v change the name
-; Template() {
-;     BlockInput "On" ;    v enter the sequence between the brackets
-;     Send "{LControl down}{LControl up}"
-;     BlockInput "Off"
-; }
-
-Template() {
+sendStratagem(keyname) {
     BlockInput "On"
-    Send "{LControl down}{LControl up}"
+    ; Send "{LControl down}" . stratagems[getValue("HOTKEYS", keyname)] . "{LControl up}"
+    Send stratagems[getValue("HOTKEYS", keyname)]
     BlockInput "Off"
 }
 
-; Default
-Reinforce() {
-    BlockInput "On"
-    Send "{LControl down}wsdaw{LControl up}"
-    BlockInput "Off"
+; Config handling
+{
+    ; Enable numlock, revert previous state on exit
+    orgNumlockState := GetKeyState("NumLock", "T")
+    SetNumLockState "AlwaysOn"
+
+    ; Config path
+    configPath := A_ScriptDir . "\config.ini"
+
+    ; Config file init
+    if ( not FileExist(configPath)) {
+        FileAppend("", configPath)
+
+        ; load defaults
+        initValue("HOTKEYS", "NumpadDiv")
+        initValue("HOTKEYS", "NumpadMult")
+        initValue("HOTKEYS", "NumpadSub")
+        initValue("HOTKEYS", "Numpad7")
+        initValue("HOTKEYS", "Numpad8")
+        initValue("HOTKEYS", "Numpad9")
+        initValue("HOTKEYS", "NumpadAdd")
+        initValue("HOTKEYS", "Numpad4")
+        initValue("HOTKEYS", "Numpad5")
+        initValue("HOTKEYS", "Numpad6")
+        initValue("HOTKEYS", "Numpad1")
+        initValue("HOTKEYS", "Numpad2")
+        initValue("HOTKEYS", "Numpad3")
+        initValue("HOTKEYS", "NumpadEnter")
+        initValue("HOTKEYS", "Numpad0")
+        initValue("HOTKEYS", "NumpadDot")
+
+        FileAppend("`n", configPath)
+
+        for key, value in stratagems {
+            setValue("STRATAGEMS", key, value)
+        }
+
+        FileAppend("`n", configPath)
+
+        initValue("WINDOW", "X", 0)
+        initValue("WINDOW", "Y", 0)
+        initValue("WINDOW", "AlwaysOnTop", False)
+    }
+
+    ; Update stratagems sequences
+    for key, value in stratagems {
+        setValue("STRATAGEMS", key, value)
+    }
+
+    ; Config functions
+    getValue(section, key, default := "") {
+        return IniRead(configPath, section, key, default)
+    }
+
+    setValue(section, key, value) {
+        IniWrite(value, configPath, section, key)
+        return value
+    }
+
+    initValue(section, key, default := "Blank") {
+        return setValue(section, key, getValue(section, key, default))
+    }
 }
 
-SOSBeacon() {
-    BlockInput "On"
-    Send "{LControl down}wsdw{LControl up}"
-    BlockInput "Off"
+; Load hotkeys
+loop parse, IniRead(configPath, "HOTKEYS"), "`n" {
+    hotkeyPair := StrSplit(A_LoopField, "=")
+
+    HotIfWinactive("Helldivers™ 2")
+    Hotkey(hotkeyPair[1], sendStratagem)
 }
 
-Resupply() {
-    BlockInput "On"
-    Send "{LControl down}sswd{LControl up}"
-    BlockInput "Off"
-}
+; GUI
+{
+    MyGui := Gui("-Resize " . getValue("WINDOW", "AlwaysOnTop") . "AlwaysOnTop", "HD2 Stratagems")
+    MyGui.BackColor := "292929"
+    MyGui.OnEvent("Close", MyGui_Close)
+    OnExit(MyGui_Close)
 
-EagleRearm() {
-    BlockInput "On"
-    Send "{LControl down}wwawd{LControl up}"
-    BlockInput "Off"
-}
+    MyGui_Close(*) {
+        SetNumLockState(orgNumlockState = 0 ? "Off" : "On")
 
-Hellbomb() {
-    BlockInput "On"
-    Send "{LControl down}swaswdsw{LControl up}"
-    BlockInput "Off"
-}
+        MyGui.GetPos(&guiX, &guiY)
+        setValue("WINDOW", "X", guiX)
+        setValue("WINDOW", "Y", guiY)
+        ExitApp(0)
+    }
 
-SSSDDelivery() {
-    BlockInput "On"
-    Send "{LControl down}sssww{LControl up}"
-    BlockInput "Off"
-}
+    MyGui.Add("Picture", "VAlwaysOnTop X0 Y0 W64 H64", A_ScriptDir . "\Icons\" . "AlwaysOnTop" . ".png").OnEvent("Click", (*) => MyGui.Opt(setValue("WINDOW", "AlwaysOnTop", getValue("WINDOW", "AlwaysOnTop") = "-" ? "+" : "-") . "AlwaysOnTop")) ; AlwaysOnTop
 
-UploadData() {
-    BlockInput "On"
-    Send "{LControl down}adwww{LControl up}"
-    BlockInput "Off"
-}
+    MyGui.Add("Picture", "VNumpadDiv X64 Y0 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "NumpadDiv") . ".png").OnEvent("Click", buttonClick) ; NumpadDiv
+    MyGui.Add("Picture", "VNumpadMult X128 Y0 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "NumpadMult") . ".png").OnEvent("Click", buttonClick) ; NumpadMult
+    MyGui.Add("Picture", "VNumpadSub X192 Y0 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "NumpadSub") . ".png").OnEvent("Click", buttonClick) ; NumpadSub
 
-OrbitalIlluminationFlare() {
-    BlockInput "On"
-    Send "{LControl down}ddaa{LControl up}"
-    BlockInput "Off"
-}
+    MyGui.Add("Picture", "VNumpad7 X0 Y64 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "Numpad7") . ".png").OnEvent("Click", buttonClick) ; Numpad7
+    MyGui.Add("Picture", "VNumpad8 X64 Y64 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "Numpad8") . ".png").OnEvent("Click", buttonClick) ; Numpad8
+    MyGui.Add("Picture", "VNumpad9 X128 Y64 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "Numpad9") . ".png").OnEvent("Click", buttonClick) ; Numpad9
 
-; Support Weapons
-MachineGun() {
-    BlockInput "On"
-    Send "{LControl down}saswd{LControl up}"
-    BlockInput "Off"
-}
+    ; MyGui.Add("Picture", "X192 Y64 W64 H128", A_ScriptDir . "\Icons\Blank.png") ; NumpadAdd background
+    MyGui.Add("Picture", "VNumpadAdd X192 Y96 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "NumpadAdd") . ".png").OnEvent("Click", buttonClick) ; NumpadAdd
 
-AntiMaterielRifle() {
-    BlockInput "On"
-    Send "{LControl down}sadws{LControl up}"
-    BlockInput "Off"
-}
+    MyGui.Add("Picture", "VNumpad4 X0 Y128 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "Numpad4") . ".png").OnEvent("Click", buttonClick) ; Numpad4
+    MyGui.Add("Picture", "VNumpad5 X64 Y128 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "Numpad5") . ".png").OnEvent("Click", buttonClick) ; Numpad5
+    MyGui.Add("Picture", "VNumpad6 X128 Y128 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "Numpad6") . ".png").OnEvent("Click", buttonClick) ; Numpad6
 
-Stalwart() {
-    BlockInput "On"
-    Send "{LControl down}{LControl up}"
-    BlockInput "Off"
-}
+    MyGui.Add("Picture", "VNumpad1 X0 Y192 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "Numpad1") . ".png").OnEvent("Click", buttonClick) ; Numpad1
+    MyGui.Add("Picture", "VNumpad2 X64 Y192 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "Numpad2") . ".png").OnEvent("Click", buttonClick) ; Numpad2
+    MyGui.Add("Picture", "VNumpad3 X128 Y192 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "Numpad3") . ".png").OnEvent("Click", buttonClick) ; Numpad3
 
-ExpendableAntiTank() {
-    BlockInput "On"
-    Send "{LControl down}ssawd{LControl up}"
-    BlockInput "Off"
-}
+    ; MyGui.Add("Picture", "X192 Y192 W64 H128", A_ScriptDir . "\Icons\Blank.png") ; NumpadEnter background
+    MyGui.Add("Picture", "VNumpadEnter X192 Y224 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "NumpadEnter") . ".png").OnEvent("Click", buttonClick) ; NumpadEnter
 
-RecoillessRifle() {
-    BlockInput "On"
-    Send "{LControl down}sadda{LControl up}"
-    BlockInput "Off"
-}
+    ; MyGui.Add("Picture", "X0 Y256 W128 H64", A_ScriptDir . "\Icons\Blank.png") ; Numpad0 background
+    MyGui.Add("Picture", "VNumpad0 X32 Y256 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "Numpad0") . ".png").OnEvent("Click", buttonClick) ; Numpad0
+    MyGui.Add("Picture", "VNumpadDot X128 Y256 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "NumpadDot") . ".png").OnEvent("Click", buttonClick) ; NumpadDot
 
-Flamethrower() {
-    BlockInput "On"
-    Send "{LControl down}{LControl up}"
-    BlockInput "Off"
-}
+    buttonClick(GuiCtrlObj, Info) {
+        stratagemPath := FileSelect(3, A_ScriptDir . "\Icons", "Select stratagem", "Stratagem (*.png)")
+        if ( not stratagemPath = "") {
+            stratagem := StrSplit(stratagemPath, "\")
+            stratagem := StrSplit(stratagem[stratagem.Length], ".")[1]
 
-Autocannon() {
-    BlockInput "On"
-    Send "{LControl down}saswwd{LControl up}"
-    BlockInput "Off"
-}
+            setValue("HOTKEYS", GuiCtrlObj.Name, stratagem)
 
-RailGun() {
-    BlockInput "On"
-    Send "{LControl down}sdswad{LControl up}"
-    BlockInput "Off"
-}
+            GuiCtrlObj.Value := stratagemPath
+            GuiCtrlObj.Redraw()
+        }
+    }
 
-Spear() {
-    BlockInput "On"
-    Send "{LControl down}{LControl up}"
-    BlockInput "Off"
-}
-
-GrenadeLauncher() {
-    BlockInput "On"
-    Send "{LControl down}{LControl up}"
-    BlockInput "Off"
-}
-
-LaserCannon() {
-    BlockInput "On"
-    Send "{LControl down}{LControl up}"
-    BlockInput "Off"
-}
-
-ArcThrower() {
-    BlockInput "On"
-    Send "{LControl down}{LControl up}"
-    BlockInput "Off"
-}
-
-; Support Equipement
-JumpPack() {
-    BlockInput "On"
-    Send "{LControl down}swwsw{LControl up}"
-    BlockInput "Off"
-}
-
-SupplyPack() {
-    BlockInput "On"
-    Send "{LControl down}{LControl up}"
-    BlockInput "Off"
-}
-
-GuardDog() {
-    BlockInput "On"
-    Send "{LControl down}swawds{LControl up}"
-    BlockInput "Off"
-}
-
-GuardDogRover() {
-    BlockInput "On"
-    Send "{LControl down}{LControl up}"
-    BlockInput "Off"
-}
-
-BallisticShieldBackpack() {
-    BlockInput "On"
-    Send "{LControl down}{LControl up}"
-    BlockInput "Off"
-}
-
-ShieldGeneratorPack() {
-    BlockInput "On"
-    Send "{LControl down}swadad{LControl up}"
-    BlockInput "Off"
-}
-
-; Orbital Cannons
-OrbitalGatlingBarrage() {
-    BlockInput "On"
-    Send "{LControl down}dsaww{LControl up}"
-    BlockInput "Off"
-}
-
-OrbitalAirburstStrike() {
-    BlockInput "On"
-    Send "{LControl down}ddd{LControl up}"
-    BlockInput "Off"
-}
-
-Orbital120MMHEBarrage() {
-    BlockInput "On"
-    Send "{LControl down}ddsads{LControl up}"
-    BlockInput "Off"
-}
-
-Orbital380MMHEBarrage() {
-    BlockInput "On"
-    Send "{LControl down}dswwass{LControl up}"
-    BlockInput "Off"
-}
-
-OrbitalWalkingBarrage() {
-    BlockInput "On"
-    Send "{LControl down}{LControl up}"
-    BlockInput "Off"
-}
-
-OrbitalLaser() {
-    BlockInput "On"
-    Send "{LControl down}dswds{LControl up}"
-    BlockInput "Off"
-}
-
-OrbitalRailcannonStrike() {
-    BlockInput "On"
-    Send "{LControl down}{LControl up}"
-    BlockInput "Off"
-}
-
-OrbitalPrecisionStrike() {
-    BlockInput "On"
-    Send "{LControl down}ddw{LControl up}"
-    BlockInput "Off"
-}
-
-OrbitalGasStrike() {
-    BlockInput "On"
-    Send "{LControl down}{LControl up}"
-    BlockInput "Off"
-}
-
-OrbitalEMSStrike() {
-    BlockInput "On"
-    Send "{LControl down}{LControl up}"
-    BlockInput "Off"
-}
-
-OrbitalSmokeStrike() {
-    BlockInput "On"
-    Send "{LControl down}{LControl up}"
-    BlockInput "Off"
-}
-
-; Eagle Strike
-EagleStrafingRun() {
-    BlockInput "On"
-    Send "{LControl down}wdd{LControl up}"
-    BlockInput "Off"
-}
-
-EagleAirstrike() {
-    BlockInput "On"
-    Send "{LControl down}wdsd{LControl up}"
-    BlockInput "Off"
-}
-
-EagleClusterBomb() {
-    BlockInput "On"
-    Send "{LControl down}wdssd{LControl up}"
-    BlockInput "Off"
-}
-
-EagleNapalmAirstrike() {
-    BlockInput "On"
-    Send "{LControl down}{LControl up}"
-    BlockInput "Off"
-}
-
-EagleSmokeStrike() {
-    BlockInput "On"
-    Send "{LControl down}{LControl up}"
-    BlockInput "Off"
-}
-
-Eagle110MMRocketPods() {
-    BlockInput "On"
-    Send "{LControl down}wdwa{LControl up}"
-    BlockInput "Off"
-}
-
-Eagle500KgBomb() {
-    BlockInput "On"
-    Send "{LControl down}wdsss{LControl up}"
-    BlockInput "Off"
-}
-
-; Field Effects
-AntiPersonnelMinefield() {
-    BlockInput "On"
-    Send "{LControl down}sawd{LControl up}"
-    BlockInput "Off"
-}
-
-IncendiaryMines() {
-    BlockInput "On"
-    Send "{LControl down}{LControl up}"
-    BlockInput "Off"
-}
-
-HMGEmplacement() {
-    BlockInput "On"
-    Send "{LControl down}swadda{LControl up}"
-    BlockInput "Off"
-}
-
-ShieldGeneratorRelay() {
-    BlockInput "On"
-    Send "{LControl down}{LControl up}"
-    BlockInput "Off"
-}
-
-TeslaTower() {
-    BlockInput "On"
-    Send "{LControl down}{LControl up}"
-    BlockInput "Off"
-}
-
-; Turrets
-MachineGunSentry() {
-    BlockInput "On"
-    Send "{LControl down}swddw{LControl up}"
-    BlockInput "Off"
-}
-
-GatlingSentry() {
-    BlockInput "On"
-    Send "{LControl down}swda{LControl up}"
-    BlockInput "Off"
-}
-
-MortarSentry() {
-    BlockInput "On"
-    Send "{LControl down}swdds{LControl up}"
-    BlockInput "Off"
-}
-
-AutocannonSentry() {
-    BlockInput "On"
-    Send "{LControl down}{LControl up}"
-    BlockInput "Off"
-}
-
-RocketSentry() {
-    BlockInput "On"
-    Send "{LControl down}swdda{LControl up}"
-    BlockInput "Off"
-}
-
-EMSMortarSentry() {
-    BlockInput "On"
-    Send "{LControl down}{LControl up}"
-    BlockInput "Off"
+    MyGui.Show("X" . getValue("WINDOW", "X") . " Y" . getValue("WINDOW", "Y") . " W256 H320")
 }
