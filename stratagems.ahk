@@ -2,6 +2,14 @@
 SendMode "Event"
 SetKeyDelay 100, 50
 
+if ( not WinExist("ahk_exe helldivers2.exe")) {
+    runResult := MsgBox("Do you want to start the game?", "Run Helldivers 2?", "292 T10")
+
+    if (runResult = "yes") {
+        Run("steam://rungameid/553850")
+    }
+}
+
 sendStratagem(keyname) {
     BlockInput "On"
     Send "{LControl down}" . getStratagem(getValue("HOTKEYS", keyname)) . "{LControl up}"
@@ -70,7 +78,7 @@ sendStratagem(keyname) {
 loop parse, IniRead(configPath, "HOTKEYS"), "`n" {
     hotkeyPair := StrSplit(A_LoopField, "=")
 
-    HotIfWinactive("HELLDIVERS™ 2")
+    HotIfWinactive("ahk_exe helldivers2.exe")
     Hotkey(hotkeyPair[1], sendStratagem)
 }
 
