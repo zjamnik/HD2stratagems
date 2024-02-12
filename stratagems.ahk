@@ -17,6 +17,40 @@ sendStratagem(keyname) {
     BlockInput("Off")
 }
 
+
+
+; Loadout recorder
+global recording := false
+; HotIfWinactive("ahk_exe helldivers2.exe")
+; Hotkey("~Space", () => setValue("LOADOUTS", "GuardDog", getValue("LOADOUTS", "GuardDog") . "x"), "Off")
+;     Hotkey("~w:: setValue("LOADOUTS", "GuardDog", getValue("LOADOUTS", "GuardDog") . "w"), "Off")
+;     Hotkey("~s:: setValue("LOADOUTS", "GuardDog", getValue("LOADOUTS", "GuardDog") . "s"), "Off")
+;     Hotkey("~a:: setValue("LOADOUTS", "GuardDog", getValue("LOADOUTS", "GuardDog") . "a"), "Off")
+;     Hotkey("~d", (*) => setValue("LOADOUTS", "GuardDog", getValue("LOADOUTS", "GuardDog") . "d"), "Off")
+
+;     [:: {
+;         if (recording) {
+;             Hotkey("~Space", , "Off")
+;             Hotkey("~w", , "Off")
+;             Hotkey("~s", , "Off")
+;             Hotkey("~a", , "Off")
+;             Hotkey("~d", , "Off")
+;         } else {
+;             Hotkey("~Space", , "On")
+;             Hotkey("~w", , "On")
+;             Hotkey("~s", , "On")
+;             Hotkey("~a", , "On")
+;             Hotkey("~d", , "On")
+;             setValue("LOADOUTS", "GuardDog", getValue("LOADOUTS", "GuardDog") . "")
+;         }
+;         global recording := not recording
+;     }
+]:: {
+    loop parse getValue("LOADOUTS", getValue("HOTKEYS", "Loadout")) {
+        Send(A_LoopField = "x" ? "{Space}" : A_LoopField)
+    }
+}
+
 ; Config handling
 {
     ; Enable numlock, revert previous state on exit
