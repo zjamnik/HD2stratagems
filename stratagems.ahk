@@ -10,18 +10,32 @@ if ( not WinExist("ahk_exe helldivers2.exe")) {
     }
 }
 
+#HotIf WinActive('ahk_exe helldivers2.exe')
+/:: {
+    loop parse getValue("LOADOUTS", "GuardDog") {
+        switch A_LoopField {
+            case "x": Send("{Space}")
+            case "w": Send("{Up}")
+            case "s": Send("{Down}")
+            case "a": Send("{Left}")
+            case "d": Send("{Right}")
+        }
+    }
+}
+#HotIf
+
 sendStratagem(keyname) {
-    BlockInput "On"
-    Send "{LControl down}" . getStratagem(getValue("HOTKEYS", keyname)) . "{LControl up}"
+    BlockInput("On")
+    Send("{LControl down}" . getStratagem(getValue("HOTKEYS", keyname)) . "{LControl up}")
     ; Send getStratagem(getValue("HOTKEYS", keyname))
-    BlockInput "Off"
+    BlockInput("Off")
 }
 
 ; Config handling
 {
     ; Enable numlock, revert previous state on exit
     orgNumlockState := GetKeyState("NumLock", "T")
-    SetNumLockState "AlwaysOn"
+    SetNumLockState("AlwaysOn")
 
     ; Config path
     configPath := A_ScriptDir . "\config.ini"
