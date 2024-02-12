@@ -10,20 +10,6 @@ if ( not WinExist("ahk_exe helldivers2.exe")) {
     }
 }
 
-#HotIf WinActive('ahk_exe helldivers2.exe')
-/:: {
-    loop parse getValue("LOADOUTS", "GuardDog") {
-        switch A_LoopField {
-            case "x": Send("{Space}")
-            case "w": Send("{Up}")
-            case "s": Send("{Down}")
-            case "a": Send("{Left}")
-            case "d": Send("{Right}")
-        }
-    }
-}
-#HotIf
-
 sendStratagem(keyname) {
     BlockInput("On")
     Send("{LControl down}" . getStratagem(getValue("HOTKEYS", keyname)) . "{LControl up}")
@@ -63,7 +49,7 @@ sendStratagem(keyname) {
         initValue("HOTKEYS", "NumpadDot")
 
         FileAppend("`n", configPath)
-
+        
         initValue("WINDOW", "X", 0)
         initValue("WINDOW", "Y", 0)
         initValue("WINDOW", "AlwaysOnTop", "+")
@@ -91,7 +77,6 @@ sendStratagem(keyname) {
 ; Load hotkeys
 loop parse, IniRead(configPath, "HOTKEYS"), "`n" {
     hotkeyPair := StrSplit(A_LoopField, "=")
-
     HotIfWinactive("ahk_exe helldivers2.exe")
     Hotkey(hotkeyPair[1], sendStratagem)
 }
@@ -100,13 +85,13 @@ loop parse, IniRead(configPath, "HOTKEYS"), "`n" {
 {
     MyGui := Gui("-Resize " . getValue("WINDOW", "AlwaysOnTop") . "AlwaysOnTop", "HD2 Stratagems")
     MyGui.BackColor := "292929"
+    \:: MyGui.Restore()
+
     MyGui.OnEvent("Close", MyGui_Close)
     OnExit(MyGui_Close)
-    \:: MyGui.Restore()
 
     MyGui_Close(*) {
         SetNumLockState(orgNumlockState = 0 ? "Off" : "On")
-
         MyGui.GetPos(&guiX, &guiY)
         setValue("WINDOW", "X", guiX)
         setValue("WINDOW", "Y", guiY)
@@ -118,41 +103,31 @@ loop parse, IniRead(configPath, "HOTKEYS"), "`n" {
     MyGui.Add("Picture", "VNumpadDiv X64 Y0 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "NumpadDiv") . ".png").OnEvent("Click", buttonClick) ; NumpadDiv
     MyGui.Add("Picture", "VNumpadMult X128 Y0 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "NumpadMult") . ".png").OnEvent("Click", buttonClick) ; NumpadMult
     MyGui.Add("Picture", "VNumpadSub X192 Y0 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "NumpadSub") . ".png").OnEvent("Click", buttonClick) ; NumpadSub
-
     MyGui.Add("Picture", "VNumpad7 X0 Y64 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "Numpad7") . ".png").OnEvent("Click", buttonClick) ; Numpad7
     MyGui.Add("Picture", "VNumpad8 X64 Y64 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "Numpad8") . ".png").OnEvent("Click", buttonClick) ; Numpad8
     MyGui.Add("Picture", "VNumpad9 X128 Y64 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "Numpad9") . ".png").OnEvent("Click", buttonClick) ; Numpad9
 
-    ; MyGui.Add("Picture", "X192 Y64 W64 H128", A_ScriptDir . "\Icons\Blank.png") ; NumpadAdd background
     MyGui.Add("Picture", "VNumpadAdd X192 Y96 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "NumpadAdd") . ".png").OnEvent("Click", buttonClick) ; NumpadAdd
-
     MyGui.Add("Picture", "VNumpad4 X0 Y128 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "Numpad4") . ".png").OnEvent("Click", buttonClick) ; Numpad4
     MyGui.Add("Picture", "VNumpad5 X64 Y128 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "Numpad5") . ".png").OnEvent("Click", buttonClick) ; Numpad5
     MyGui.Add("Picture", "VNumpad6 X128 Y128 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "Numpad6") . ".png").OnEvent("Click", buttonClick) ; Numpad6
-
     MyGui.Add("Picture", "VNumpad1 X0 Y192 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "Numpad1") . ".png").OnEvent("Click", buttonClick) ; Numpad1
     MyGui.Add("Picture", "VNumpad2 X64 Y192 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "Numpad2") . ".png").OnEvent("Click", buttonClick) ; Numpad2
     MyGui.Add("Picture", "VNumpad3 X128 Y192 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "Numpad3") . ".png").OnEvent("Click", buttonClick) ; Numpad3
 
-    ; MyGui.Add("Picture", "X192 Y192 W64 H128", A_ScriptDir . "\Icons\Blank.png") ; NumpadEnter background
     MyGui.Add("Picture", "VNumpadEnter X192 Y224 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "NumpadEnter") . ".png").OnEvent("Click", buttonClick) ; NumpadEnter
 
-    ; MyGui.Add("Picture", "X0 Y256 W128 H64", A_ScriptDir . "\Icons\Blank.png") ; Numpad0 background
     MyGui.Add("Picture", "VNumpad0 X32 Y256 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "Numpad0") . ".png").OnEvent("Click", buttonClick) ; Numpad0
     MyGui.Add("Picture", "VNumpadDot X128 Y256 W64 H64", A_ScriptDir . "\Icons\" . getValue("HOTKEYS", "NumpadDot") . ".png").OnEvent("Click", buttonClick) ; NumpadDot
-
     buttonClick(GuiCtrlObj, Info) {
         stratagemPath := FileSelect(3, A_ScriptDir . "\Icons", "Select stratagem", "Stratagem (*.png)")
         if ( not stratagemPath = "") {
             stratagem := StrSplit(stratagemPath, "\")
             stratagem := StrSplit(stratagem[stratagem.Length], ".")[1]
-
             setValue("HOTKEYS", GuiCtrlObj.Name, stratagem)
-
             GuiCtrlObj.Value := stratagemPath
             GuiCtrlObj.Redraw()
         }
     }
-
     MyGui.Show("X" . getValue("WINDOW", "X") . " Y" . getValue("WINDOW", "Y") . " W256 H320")
 }
