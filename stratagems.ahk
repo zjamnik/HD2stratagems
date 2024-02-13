@@ -190,8 +190,10 @@ loop parse, IniRead(configPath, "HOTKEYS"), "`n" {
     MyGui_Close(*) {
         SetNumLockState(orgNumlockState = 0 ? "Off" : "On")
         MyGui.GetPos(&guiX, &guiY)
-        setValue("WINDOW", "X", guiX)
-        setValue("WINDOW", "Y", guiY)
+        if ( not guiX = -32000 and not guiY = -32000) {
+            setValue("WINDOW", "X", guiX)
+            setValue("WINDOW", "Y", guiY)
+        }
         ExitApp(0)
     }
 
