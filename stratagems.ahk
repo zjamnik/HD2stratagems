@@ -17,10 +17,9 @@ sendStratagem(keyname) {
     BlockInput("Off")
 }
 
-; wdsaawd
 ; Loadout recorder
 global recording := false
-; HotIfWinactive("ahk_exe helldivers2.exe")
+HotIfWinactive("ahk_exe helldivers2.exe")
 Hotkey("~Space", recorderHotkey, "Off")
 Hotkey("~w", recorderHotkey, " Off ")
 Hotkey("~s", recorderHotkey, " Off ")
@@ -32,6 +31,7 @@ recorderHotkey(keypressed) {
     global loadoutSequence .= keypressed = "~Space" ? "x" : StrSplit(keypressed, "~")[2]
 }
 
+#HotIf WinActive("ahk_exe helldivers2.exe")
 [:: {
     if (recording) {
         Hotkey("~Space", , "Off")
@@ -47,6 +47,7 @@ recorderHotkey(keypressed) {
             updateLoadoutText()
         }
     } else {
+        global loadoutSequence := ""
         Hotkey("~Space", , "On")
         Hotkey("~w", , "On")
         Hotkey("~s", , "On")
@@ -57,7 +58,7 @@ recorderHotkey(keypressed) {
 }
 
 ]:: {
-    loop parse getValue("LOADOUTS", getValue("HOTKEYS", "Loadout")) {
+    loop parse getValue("LOADOUTS", getValue("WINDOW", "CurrentLoadout")) {
         Send(A_LoopField = "x" ? "{Space}" : A_LoopField)
     }
 }
@@ -65,30 +66,35 @@ recorderHotkey(keypressed) {
 ; Delete current loadout
 ^[:: {
     delValue("LOADOUTS", getValue("WINDOW", "CurrentLoadout"))
+    changeLoadout(1)
 }
 
 ; Previous loadout
-+[:: changeLoadout(-2)
++[:: changeLoadout(-1)
 
 ; Next loadout
-+]:: changeLoadout(2)
++]:: changeLoadout(1)
+#HotIf
 
 changeLoadout(offset) {
     loadouts := StrSplit(getSection("LOADOUTS"), "`n")
-    currentIndex := 0
+    if ( not loadouts.Length = 0) {
+        currentIndex := 0
 
-    for loadout in loadouts {
-        if (StrSplit(loadout, "=")[1] = getValue("WINDOW", "CurrentLoadout"))
-            currentIndex := A_Index
+        for loadout in loadouts {
+            if (StrSplit(loadout, "=")[1] = getValue("WINDOW", "CurrentLoadout"))
+                currentIndex := A_Index
+        }
+
+        ; MsgBox "Mod(currentIndex + offset, loadouts.Length) = " . "Mod(" . currentIndex . " + " . offset . ", " . loadouts.Length . ") = Mod(" . currentIndex + offset . ", " . loadouts.Length . ") = " . Mod(currentIndex + offset, loadouts.Length)
+        currentIndex := Modulo(currentIndex + offset, loadouts.Length)
+        currentIndex := currentIndex = 0 ? loadouts.Length : currentIndex
+        ; MsgBox currentIndex
+
+        setValue("WINDOW", "CurrentLoadout", StrSplit(loadouts[currentIndex], "=")[1])
+    } else {
+        setValue("WINDOW", "CurrentLoadout", "No loadouts")
     }
-
-    MsgBox "Mod(currentIndex + offset, loadouts.Length) = " . "Mod(" . currentIndex . " + " . offset . ", " . loadouts.Length . ") = Mod(" . currentIndex + offset . ", " . loadouts.Length . ") = " . Mod(currentIndex + offset, loadouts.Length)
-    currentIndex := Modulo(currentIndex + offset, loadouts.Length)
-    currentIndex := currentIndex = 0 ? loadouts.Length : currentIndex
-    ; MsgBox currentIndex
-
-    setValue("WINDOW", "CurrentLoadout", StrSplit(loadouts[currentIndex], "=")[1])
-
     updateLoadoutText()
 }
 
@@ -133,7 +139,7 @@ changeLoadout(offset) {
         initValue("WINDOW", "X", 0)
         initValue("WINDOW", "Y", 0)
         initValue("WINDOW", "AlwaysOnTop", "+")
-        initValue("WINDOW", "CurrentLoadout", "")
+        initValue("WINDOW", "CurrentLoadout", "No loadouts")
     }
 
     ; Config functions
@@ -230,7 +236,7 @@ loop parse, IniRead(configPath, "HOTKEYS"), "`n" {
         }
     }
 
-    updateLoadoutText() {
+    updateLoadoutText(text := "None") {
         MyGui["loadoutText"].Value := getValue("WINDOW", "CurrentLoadout")
     }
 
