@@ -32,7 +32,7 @@ recorderHotkey(keypressed) {
 }
 
 #HotIf WinActive("ahk_exe helldivers2.exe")
-[:: {
+^]:: {
     if (recording) {
         Hotkey("~Space", , "Off")
         Hotkey("~w", , "Off")
