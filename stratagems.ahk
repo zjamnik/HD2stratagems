@@ -2,13 +2,13 @@
 SendMode "Event"
 SetKeyDelay 100, 50
 
-; if ( not WinExist("ahk_exe helldivers2.exe")) {
-;     runResult := MsgBox("Do you want to start the game?", "Run Helldivers 2?", "292 T10")
+if ( not WinExist("ahk_exe helldivers2.exe")) {
+    runResult := MsgBox("Do you want to start the game?", "Run Helldivers 2?", "292 T10")
 
-;     if (runResult = "yes") {
-;         Run("steam://rungameid/553850")
-;     }
-; }
+    if (runResult = "yes") {
+        Run("steam://rungameid/553850")
+    }
+}
 
 sendStratagem(keyname) {
     BlockInput("On")
@@ -21,9 +21,9 @@ sendStratagem(keyname) {
 global recording := false
 HotIfWinactive("ahk_exe helldivers2.exe")
 Hotkey("~Space", recorderHotkey, "Off")
-Hotkey("~w", recorderHotkey, " Off ")
-Hotkey("~s", recorderHotkey, " Off ")
-Hotkey("~a", recorderHotkey, " Off ")
+Hotkey("~w", recorderHotkey, "Off")
+Hotkey("~s", recorderHotkey, "Off")
+Hotkey("~a", recorderHotkey, "Off")
 Hotkey("~d", recorderHotkey, "Off")
 
 global loadoutSequence := ""
